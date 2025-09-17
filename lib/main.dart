@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jalanin_aja/login_screen.dart';
 
 void main() {
   runApp(const JalaninAjaApp());
@@ -15,7 +16,7 @@ class JalaninAjaApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Poppins', // Anda bisa ganti dengan font favorit
       ),
-      home: const HomePage(),
+      home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
