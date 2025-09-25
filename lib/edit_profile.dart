@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'user_data.dart'; // pastikan ada method updateUser di sini
+import 'user_data.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String fullName;
