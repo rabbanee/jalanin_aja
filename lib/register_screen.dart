@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'user_data.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,30 +14,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  @override
-  void dispose() {
-    _fullNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
   void _handleRegistration() {
     if (_formKey.currentState!.validate()) {
-      final fullName = _fullNameController.text;
-      final email = _emailController.text;
-      final password = _passwordController.text;
+      final fullName = _fullNameController.text.trim();
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
 
-      _showSuccessDialog();
-      
-      debugPrint('Pendaftaran Berhasil!');
-      debugPrint('Nama Lengkap: $fullName');
-      debugPrint('Email: $email');
-      debugPrint('Password: $password');
+      final success = UserData.register(fullName, email, password);
+
+      if (success) {
+        _showSuccessDialog();
+      } else {
+        _showEmailExistDialog();
+      }
     }
   }
 
-  // Menampilkan dialog sukses
   void _showSuccessDialog() {
     showDialog(
       context: context,
@@ -44,11 +37,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return AlertDialog(
           title: const Text('Pendaftaran Berhasil'),
           content: const Text('Akun Anda telah berhasil dibuat.'),
-          actions: <Widget>[
+          actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-                Navigator.of(context).pop(); // Kembali ke halaman sebelumnya (login)
+                Navigator.of(context).pop(); // tutup dialog
+                Navigator.of(context).pop(); // kembali ke login
               },
               child: const Text('OK'),
             ),
@@ -58,131 +51,139 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  void _showEmailExistDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Pendaftaran Gagal"),
+          content: const Text("Akun dengan email ini sudah terdaftar."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // tutup dialog
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Buat Akun Baru'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Satu Langkah Lagi!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Isi data di bawah untuk memulai',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                  ),
-                  const SizedBox(height: 48),
-
-                  TextFormField(
-                    controller: _fullNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nama Lengkap',
-                      prefixIcon: const Icon(Icons.person),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nama lengkap tidak boleh kosong';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                
-                  // TextFormField untuk Email
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Email tidak boleh kosong';
-                      }
-                      // Regex untuk validasi format email dasar
-                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Masukkan format email yang valid';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                
-                  // TextFormField untuk Password
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password tidak boleh kosong';
-                      }
-                      if (value.length < 6) {
-                        return 'Password harus minimal 6 karakter';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 40),
-
-                  ElevatedButton(
-                    onPressed: _handleRegistration,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Colors.blue.shade700,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('DAFTAR', style: TextStyle(fontSize: 16)),
-                  ),
-                  const SizedBox(height: 24),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Sudah punya akun?"),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Login di sini'),
-                      ),
-                    ],
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 80),
+              const Icon(
+                Icons.directions_car,
+                size: 100,
+                color: Colors.blueAccent,
               ),
-            ),
+              const SizedBox(height: 20),
+              const Text(
+                "Buat Akun Baru",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 40),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // Nama Lengkap
+                    TextFormField(
+                      controller: _fullNameController,
+                      decoration: const InputDecoration(
+                        labelText: "Nama Lengkap",
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) =>
+                          value == null || value.isEmpty ? "Nama wajib diisi" : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Email
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        prefixIcon: Icon(Icons.email),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email wajib diisi";
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                          return "Format email tidak valid";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Password
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(
+                        labelText: "Password",
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                      validator: (value) => value != null && value.length < 6
+                          ? "Minimal 6 karakter"
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Tombol DAFTAR
+                    ElevatedButton(
+                      onPressed: _handleRegistration,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Colors.blueAccent,
+                      ),
+                      child: const Text("DAFTAR"),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Tombol Kembali ke Login (sama style)
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // kembali ke LoginScreen
+                      },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Colors.grey[400],
+                      ),
+                      child: const Text("Kembali ke Login"),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
