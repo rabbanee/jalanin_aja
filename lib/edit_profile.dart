@@ -42,7 +42,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Fungsi pilih foto dari gallery
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile =await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);

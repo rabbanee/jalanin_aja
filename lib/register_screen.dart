@@ -25,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (success) {
         _showSuccessDialog();
       } else {
-        _showEmailExistDialog(); // tampilkan peringatan kalau email sudah terdaftar
+        _showEmailExistDialog();
       }
     }
   }
@@ -36,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Pendaftaran Berhasil'),
-          content: const Text('Akun Anda telah berhasil dibuat tod.'),
+          content: const Text('Akun Anda telah berhasil dibuat.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -51,14 +51,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  /// Dialog kalau email sudah terdaftar
   void _showEmailExistDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Pendaftaran Gagal lol "),
-          content: const Text(" EH bangsat Akun dengan email ini sudah terdaftar."),
+          title: const Text("Pendaftaran Gagal"),
+          content: const Text("Akun dengan email ini sudah terdaftar."),
           actions: [
             TextButton(
               onPressed: () {
@@ -90,26 +89,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 80),
-
-              // Icon mobil di atas form
-              Icon(
+              const Icon(
                 Icons.directions_car,
                 size: 100,
                 color: Colors.blueAccent,
               ),
               const SizedBox(height: 20),
-
               const Text(
                 "Buat Akun Baru",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 40),
-
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
+                    // Nama Lengkap
                     TextFormField(
                       controller: _fullNameController,
                       decoration: const InputDecoration(
@@ -118,9 +113,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) =>
-                          value == null || value.isEmpty ? "Nama wajib diisi LERRR" : null,
+                          value == null || value.isEmpty ? "Nama wajib diisi" : null,
                     ),
                     const SizedBox(height: 16),
+
+                    // Email
                     TextFormField(
                       controller: _emailController,
                       decoration: const InputDecoration(
@@ -139,6 +136,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+
+                    // Password
                     TextFormField(
                       controller: _passwordController,
                       decoration: const InputDecoration(
@@ -152,6 +151,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           : null,
                     ),
                     const SizedBox(height: 20),
+
+                    // Tombol DAFTAR
                     ElevatedButton(
                       onPressed: _handleRegistration,
                       style: ElevatedButton.styleFrom(
@@ -159,8 +160,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        backgroundColor: Colors.blueAccent,
                       ),
                       child: const Text("DAFTAR"),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Tombol Kembali ke Login (sama style)
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // kembali ke LoginScreen
+                      },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        backgroundColor: Colors.grey[400],
+                      ),
+                      child: const Text("Kembali ke Login"),
                     ),
                   ],
                 ),
