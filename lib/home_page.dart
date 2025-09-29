@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'profile.dart';
+import 'map_page.dart';
 
 class HomePage extends StatefulWidget {
   final String fullName;
@@ -56,7 +57,12 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchMapPage()),
+                  );
+                },
                 child: Row(
                   children: [
                     const Icon(Icons.search, color: Colors.blue),
@@ -77,8 +83,18 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              ServiceButton(icon: Icons.two_wheeler, label: 'Motor', onTap: () {}),
-              ServiceButton(icon: Icons.directions_car, label: 'Mobil', onTap: () {}),
+              ServiceButton(icon: Icons.two_wheeler, label: 'Motor', onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchMapPage(serviceType:"motor")),
+                );
+              }),
+              ServiceButton(icon: Icons.directions_car, label: 'Mobil', onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SearchMapPage(serviceType:"mobil")),
+                );
+              }),
               ServiceButton(icon: Icons.receipt_long, label: 'Tagihan', onTap: () {}),
             ],
           ),
