@@ -42,7 +42,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Fungsi pilih foto dari gallery
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final pickedFile =await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _profileImage = File(pickedFile.path);
@@ -51,25 +51,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   // Fungsi simpan perubahan
-  void _saveProfile() {
+  void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       final newName = _nameController.text.trim();
       final newEmail = _emailController.text.trim();
       final newPassword = _passwordController.text.trim();
 
       // Update data di UserData
-UserData.updateProfile(
-  oldEmail: widget.email,
-  newName: newName,
-  newEmail: newEmail,
-  newPassword: newPassword?.isNotEmpty == true ? newPassword : null,
-);
+      await UserData.updateProfile(
+        oldEmail: widget.email,
+        newName: newName,
+        newEmail: newEmail,
+        newPassword: newPassword?.isNotEmpty == true ? newPassword : null,
+        newImagePath: _profileImage?.path,
+      );
 
       // Kirim balik data terbaru ke halaman sebelumnya
       Navigator.pop(context, {
         'fullName': newName,
         'email': newEmail,
-        'password': newPassword.isNotEmpty ? newPassword : null,
+        // 'password': newPassword.isNotEmpty ? newPassword : null,
         'profileImage': _profileImage,
       });
     }
@@ -97,13 +98,17 @@ UserData.updateProfile(
                     backgroundImage: _profileImage != null
                         ? FileImage(_profileImage!)
                         : const NetworkImage('https://i.pravatar.cc/150?img=32')
-                            as ImageProvider,
+                              as ImageProvider,
                     child: const Align(
                       alignment: Alignment.bottomRight,
                       child: CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 15,
-                        child: Icon(Icons.camera_alt, size: 18, color: Colors.black),
+                        child: Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -143,7 +148,10 @@ UserData.updateProfile(
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility),
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
                       onPressed: () {
                         setState(() {
                           _obscurePassword = !_obscurePassword;

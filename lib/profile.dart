@@ -6,6 +6,7 @@ import 'settings_page.dart';
 import 'pusat_bantuan.dart'; // import HelpCenterPage
 import 'topup_page.dart'; // Import untuk halaman Top Up
 import 'history_page.dart'; // Halaman Riwayat Pesanan
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   final String fullName;
@@ -177,7 +178,10 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.logout,
               title: "Logout",
               textColor: Colors.red,
-              onTap: () {
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('logged_in_user_email'); // HAPUS SESI
+
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'home_page.dart';
 import 'user_data.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // TAMBAHKAN import ini
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,17 +16,21 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      final user = UserData.login(email, password);
+      final user = await UserData.login(email, password);
 
       if (user != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Login berhasil!")),
-        );
+        // --- SIMPAN SESI LOGIN ---
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('logged_in_user_email', email);
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Login berhasil!")));
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -62,8 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 80),
 
-              
-              const Icon(Icons.directions_car, size: 100, color: Colors.blueAccent),
+              const Icon(
+                Icons.directions_car,
+                size: 100,
+                color: Colors.blueAccent,
+              ),
               const SizedBox(height: 20),
 
               const Text(
@@ -85,8 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         prefixIcon: Icon(Icons.email),
                         border: OutlineInputBorder(),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? "Email wajib diisi" : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? "Email wajib diisi"
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -97,8 +106,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         border: OutlineInputBorder(),
                       ),
                       obscureText: true,
-                      validator: (value) =>
-                          value == null || value.isEmpty ? "Password wajib diisi" : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? "Password wajib diisi"
+                          : null,
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(

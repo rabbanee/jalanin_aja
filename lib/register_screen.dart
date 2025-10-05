@@ -14,13 +14,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  void _handleRegistration() {
+  void _handleRegistration() async {
+    // TAMBAHKAN async
     if (_formKey.currentState!.validate()) {
       final fullName = _fullNameController.text.trim();
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      final success = UserData.register(fullName, email, password);
+      // TAMBAHKAN await
+      final success = await UserData.register(fullName, email, password);
 
       if (success) {
         _showSuccessDialog();
@@ -112,8 +114,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(),
                       ),
-                      validator: (value) =>
-                          value == null || value.isEmpty ? "Nama wajib diisi" : null,
+                      validator: (value) => value == null || value.isEmpty
+                          ? "Nama wajib diisi"
+                          : null,
                     ),
                     const SizedBox(height: 16),
 
