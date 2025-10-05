@@ -22,10 +22,30 @@ class Order {
   });
 }
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+class HistoryPage extends StatefulWidget {
+  final bool autoReload;
+  const HistoryPage({super.key, this.autoReload = false});
 
-  // contoh data sementara. Anda bisa menggantinya dengan data nyata dari API atau penyimpanan lokal.
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  late Future<List<Order>> _futureOrders;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureOrders = _loadOrders();
+    if (widget.autoReload) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        setState(() {
+          _futureOrders = _loadOrders();
+        });
+      });
+    }
+  }
+
   Future<List<Order>> _loadOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList('order_history') ?? [];

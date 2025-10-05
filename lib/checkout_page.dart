@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'history_page.dart'; // pastikan ini diimport ya
+import 'history_page.dart';
 
 class CheckoutPage extends StatelessWidget {
   final LatLng selectedLocation;
@@ -163,8 +163,6 @@ class CheckoutPage extends StatelessWidget {
                   messenger.showSnackBar(
                     SnackBar(content: Text('Pesanan $serviceName berhasil dibuat')),
                   );
-
-                  // 🔹 Tambahan: langsung pindah ke HistoryPage dan auto-reload
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (_) => const HistoryPage()),
