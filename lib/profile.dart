@@ -134,16 +134,6 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _buildMenuItem(
-              icon: Icons.settings,
-              title: "Pengaturan",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
-            ),
-            _buildMenuItem(
               icon: Icons.lock,
               title: "Ganti Password",
               onTap: () {
@@ -186,6 +176,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                   (route) => false,
+                );
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.info,
+              title: "Tentang Aplikasi",
+              textColor: Colors.blueAccent,
+              onTap: () async {
+                showAboutDialog(
+                  context: context,
+                  applicationName: "Jalanin Aja",
+                  applicationVersion: "1.0.0",
+                  children: const [
+                    Text("Aplikasi sederhana untuk contoh Flutter."),
+                  ],
                 );
               },
             ),
