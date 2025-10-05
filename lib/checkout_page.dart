@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'history_page.dart'; // pastikan ini diimport ya
 
 class CheckoutPage extends StatelessWidget {
   final LatLng selectedLocation;
@@ -154,7 +155,6 @@ class CheckoutPage extends StatelessWidget {
                   };
 
                   final messenger = ScaffoldMessenger.of(context);
-                  final nav = Navigator.of(context);
                   final prefs = await SharedPreferences.getInstance();
                   final existing = prefs.getStringList('order_history') ?? [];
                   existing.insert(0, jsonEncode(order));
@@ -164,8 +164,11 @@ class CheckoutPage extends StatelessWidget {
                     SnackBar(content: Text('Pesanan $serviceName berhasil dibuat')),
                   );
 
-                  // kembali ke halaman sebelumnya
-                  nav.pop();
+                  // 🔹 Tambahan: langsung pindah ke HistoryPage dan auto-reload
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HistoryPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),

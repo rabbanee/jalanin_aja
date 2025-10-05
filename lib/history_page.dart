@@ -9,6 +9,7 @@ class Order {
   final String to;
   final double price;
   final String status;
+  final String serviceType;
 
   Order({
     required this.id,
@@ -17,13 +18,36 @@ class Order {
     required this.to,
     required this.price,
     required this.status,
+    required this.serviceType,
   });
 }
 
-class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+class HistoryPage extends StatefulWidget {
+  final bool autoReload;
+  const HistoryPage({super.key, this.autoReload = false});
 
-  // contoh data sementara. Anda bisa menggantinya dengan data nyata dari API atau penyimpanan lokal.
+  @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  late Future<List<Order>> _futureOrders;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureOrders = _loadOrders();
+
+    // jika autoReload aktif, muat ulang sedikit setelah halaman dibuka
+    if (widget.autoReload) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        setState(() {
+          _futureOrders = _loadOrders();
+        });
+      });
+    }
+  }
+
   Future<List<Order>> _loadOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList('order_history') ?? [];
@@ -38,6 +62,7 @@ class HistoryPage extends StatelessWidget {
             ? (m['price'] as num).toDouble()
             : double.tryParse(m['price'].toString()) ?? 0.0,
         status: m['status'] ?? '',
+        serviceType: m['service'] ?? 'motor',
       );
     }).toList();
   }
@@ -52,7 +77,7 @@ class HistoryPage extends StatelessWidget {
         elevation: 1,
       ),
       body: FutureBuilder<List<Order>>(
-        future: _loadOrders(),
+        future: _futureOrders,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -70,7 +95,11 @@ class HistoryPage extends StatelessWidget {
           }
 
           return RefreshIndicator(
-            onRefresh: () async => setStatePlaceholder(() {}),
+            onRefresh: () async {
+              setState(() {
+                _futureOrders = _loadOrders();
+              });
+            },
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: orders.length,
@@ -86,7 +115,10 @@ class HistoryPage extends StatelessWidget {
                       horizontal: 16,
                       vertical: 12,
                     ),
-                    leading: const Icon(Icons.two_wheeler, size: 36),
+                    leading: Icon(_getServiceIcon(o.serviceType),
+                      size: 36,
+                      color: Colors.blueAccent,
+                    ),
                     title: Text('${o.from} → ${o.to}'),
                     subtitle: Text(
                       '${o.id} • ${_formatDate(o.date)}',
@@ -157,6 +189,19 @@ class HistoryPage extends StatelessWidget {
       ),
       child: Text(status, style: const TextStyle(fontSize: 12)),
     );
+  }
+}
+
+IconData _getServiceIcon(String type) {
+  switch (type.toLowerCase()) {
+    case 'mobil':
+      return Icons.directions_car;
+    case 'motor':
+      return Icons.two_wheeler;
+    case 'pickup':
+      return Icons.local_shipping;
+    default:
+      return Icons.help_outline;
   }
 }
 
