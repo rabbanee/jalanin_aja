@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CheckoutPage extends StatelessWidget {
   final LatLng selectedLocation;
@@ -131,16 +133,39 @@ class CheckoutPage extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        serviceType == null
-                            ? "Lokasi disimpan!"
-                            : "Pesanan $serviceName diproses...",
-                      ),
-                    ),
+                onPressed: () async {
+                  // buat object order sederhana
+                  if (serviceType == null) {
+                    final messenger = ScaffoldMessenger.of(context);
+                    messenger.showSnackBar(
+                      const SnackBar(content: Text('Lokasi disimpan!')),
+                    );
+                    return;
+                  }
+
+                  final order = {
+                    'id': 'ORD-${DateTime.now().millisecondsSinceEpoch}',
+                    'date': DateTime.now().toIso8601String(),
+                    'from': 'Lokasi Pengguna',
+                    'to': 'Lokasi Tujuan',
+                    'price': _getTarif(),
+                    'status': 'Selesai',
+                    'service': serviceType,
+                  };
+
+                  final messenger = ScaffoldMessenger.of(context);
+                  final nav = Navigator.of(context);
+                  final prefs = await SharedPreferences.getInstance();
+                  final existing = prefs.getStringList('order_history') ?? [];
+                  existing.insert(0, jsonEncode(order));
+                  await prefs.setStringList('order_history', existing);
+
+                  messenger.showSnackBar(
+                    SnackBar(content: Text('Pesanan $serviceName berhasil dibuat')),
                   );
+
+                  // kembali ke halaman sebelumnya
+                  nav.pop();
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
