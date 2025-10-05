@@ -5,6 +5,7 @@ import 'edit_profile.dart';
 import 'settings_page.dart';
 import 'pusat_bantuan.dart'; // import HelpCenterPage
 import 'topup_page.dart'; // Import untuk halaman Top Up
+import 'history_page.dart'; // Halaman Riwayat Pesanan
 
 class ProfilePage extends StatefulWidget {
   final String fullName;
@@ -124,7 +125,12 @@ class _ProfilePageState extends State<ProfilePage> {
             _buildMenuItem(
               icon: Icons.history,
               title: "Riwayat Pesanan",
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HistoryPage()),
+                );
+              },
             ),
             _buildMenuItem(
               icon: Icons.settings,

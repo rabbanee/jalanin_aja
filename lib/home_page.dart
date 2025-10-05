@@ -5,6 +5,7 @@ import 'checkout_page.dart';
 
 import 'profile.dart';
 import 'map_page.dart';
+import 'history_page.dart';
 import 'topup_page.dart'; // <<< BARIS BARU: Import TopUpPage
 
 class HomePage extends StatefulWidget {
@@ -279,7 +280,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final pages = [
       _buildHomePageContent(),
-      const Center(child: Text('Halaman Aktivitas')),
+      const HistoryPage(),
       ProfilePage(fullName: fullName, email: email, imagePath: imagePath),
     ];
 
